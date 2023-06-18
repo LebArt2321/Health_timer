@@ -1,0 +1,508 @@
+<CircularProgressBar>:
+    id: circular_progress_bar
+    canvas.before:
+        Color:
+            rgba: [0, 0, 0, 0.1] if root.set_value > 0 else [0, 0, 0, 0]
+        Line:
+            width: root.bar_width
+            ellipse: (self.x, self.y, self.width, self.height, 0, 360)
+
+    canvas.after:
+        Color:
+            rgba: [0, 1, 0, 0.5] if root.set_value > 0 else [0, 0, 0, 0]
+        Line:
+            width: root.bar_width
+            ellipse: (self.x, self.y, self.width, self.height, 0, -root.set_value * 3.6)
+
+    MDLabel:
+        id: timer_label
+        text: root.format_time(root.timer_value)
+        font_size: "40sp"
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        halign: "center"
+
+<HorizontalProgressBar>:
+    BoxLayout:
+        orientation: 'horizontal'
+        size: root.size
+        pos: root.pos
+
+        MDLabel:
+            id: medication_name_label
+            text: root.medication_name
+            font_size: "18sp"
+            halign: "center"
+
+        AnchorLayout:  # добавляем новый AnchorLayout для горизонтального прогрессбара
+            canvas.before:
+                Color:
+                    rgba: [0, 1, 0, 0.5] if root.set_value > 0 else [0, 0, 0, 0]
+                Line:
+                    width: root.bar_width
+                    points: [self.x, self.center_y, self.x + (self.width * root.set_value / 100.0), self.center_y]
+
+        MDLabel:
+            id: timer_label
+            text: root.format_time(root.timer_value)
+            font_size: "18sp"
+            halign: "center"
+
+<WindowManager>:
+    LoginScreen:
+    RegisterScreen:
+    LKScreen:
+    ADDLKScreen:
+    TimerScreen:
+        id: timer_screen
+
+<TimerScreen>:
+    name: "timer"
+    id: timer_screen
+
+    MDFloatLayout:
+        MDCard:
+            size_hint: None, None
+            size: dp(350), dp(600)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            elevation: 1
+            padding: dp(25)
+            spacing: dp(25)
+            orientation: 'vertical'
+
+            MDBoxLayout:
+                size_hint: 1, None
+                height: dp(50)
+                spacing: dp(100)
+
+                MDLabel:
+                    font_style: 'H6'
+                    text: root.name_label
+
+                MDIconButton:
+                    icon: 'ac.png'
+                    on_release: root.manager.current = "LK"
+
+            BoxLayout:
+                orientation: 'vertical'
+                pos_hint: {"center_x": 0.5, "center_y": 0.75}
+                size_hint_y: 0.5
+
+                MDLabel:
+                    id: medication_label
+                    text: ''
+                    font_style: 'H5'
+                    halign: "center"
+                    size_hint: 1, None
+                    height: dp(65)
+
+                CircularProgressBar:
+                    id: circular_progress_bar
+                    size_hint: None, None
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                    size: dp(180), dp(180)
+                    value: circular_progress_bar.timer_value
+
+            GridLayout:
+                id: timers_layout
+                cols: 1
+                size_hint_y: 0.4
+                pos_hint: {"center_x": 0.5, "y": 0.1}
+
+            MDIconButton:
+                id: add_medication_button
+                icon: "plus"
+                pos_hint: {"center_x": 0.5, "y": 0.05}
+                on_release: app.show_add_medication_dialog()
+
+<LoginScreen>:
+    name: "login"
+
+    MDCard:
+        size_hint: None, None
+        size: dp(350), dp(600)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 1
+        padding: dp(25)
+        spacing: dp(25)
+        orientation: 'vertical'
+
+        Image:
+            source: "Logo.png"
+            size_hint: 0.7, 0.7
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+        BoxLayout:
+            orientation: "vertical"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: username_input
+                    hint_text: "Логин"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: password_input
+                    radius: [50]
+                    hint_text: "Пароль"
+                    password: True
+
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDRectangleFlatButton:
+                    text: "Войти"
+                    size_hint: 1, None
+                    size: 200, 50  # Размеры кнопки
+                    on_release: root.login()
+
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDRectangleFlatButton:
+                    text: "У меня нет аккаунта"
+                    size_hint: 1, None
+                    size: 200, 50  # Размеры кнопки
+                    on_release: root.manager.current = "register"
+
+<RegisterScreen>:
+    name: "register"
+
+    MDCard:
+        size_hint: None, None
+        size: dp(350), dp(600)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 1
+        padding: dp(25)
+        spacing: dp(25)
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: "vertical"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: name_input
+                    hint_text: "Ваше Имя"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: username_input
+                    hint_text: "Придумайте Логин"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: password_input
+                    hint_text: "Придумайте Пароль"
+                    password: True
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: age_input
+                    hint_text: "Возраст"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: blood_group_input
+                    hint_text: "Группа крови"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: diseases_input
+                    hint_text: "Заболевания"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: allergies_input
+                    hint_text: "Аллергические реакции"
+
+            BoxLayout:
+                height: 10
+                pos_hint: {"center_x": 0.5}
+                MDTextField:
+                    id: weight_input
+                    hint_text: "Вес"
+
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDRectangleFlatButton:
+                    text: "Зарегистрироваться"
+                    on_release: root.register()
+
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDRectangleFlatButton:
+                    text: "Назад"
+                    on_release: root.manager.current = "login"
+
+<LKScreen>:
+    name: "LK"
+    orientation: 'vertical'
+
+    MDCard:
+        size_hint: None, None
+        size: dp(350), dp(600)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 1
+        padding: dp(25)
+        spacing: dp(4)
+        orientation: 'vertical'
+
+        MDBoxLayout:
+            size_hint: 1, None
+            height: dp(50)
+            spacing: dp(100)
+
+            MDIconButton:
+                size_hint: 1, 1
+                size: dp(300), dp(700)
+                icon: 'exit.png'
+                pos_hint: {'left': 1, 'top': 1}  # Размещение иконки Exit слева
+                user_font_size: '300sp'
+                on_release: root.manager.current = "login"
+
+            MDBoxLayout:
+                size_hint: 1, 1
+                height: dp(10)
+                padding: dp(5)
+                spacing: dp(10)
+
+            MDIconButton:
+                icon: 'timer.png'
+                on_release: root.manager.current = "timer"
+
+        MDBoxLayout:
+            size_hint: 1, None
+            height: dp(70)
+            spacing: dp(100)
+
+            MDLabel:
+                halign: "center"
+                font_style: 'H4'
+                text: root.name_label
+
+        MDBoxLayout:
+            size_hint: 1, None
+            height: dp(20)
+            spacing: dp(100)
+
+    #Информация по заболеваниям, весу и т.д.
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(60)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Возраст:"
+            MDLabel:
+                text: root.age_label
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(60)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Группа крови:"
+            MDLabel:
+                text: root.blood_group_label
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(60)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Аллергические реакции:"
+            MDLabel:
+                text: root.allergies_label
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(60)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Заболевания:"
+            MDLabel:
+                text: root.diseases_label
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(60)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Вес:"
+            MDLabel:
+                text: root.weight_label
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            height: dp(50)
+            padding: dp(5)
+            spacing: dp(10)
+
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDRectangleFlatButton:
+                    text: "Редактировать данные"
+                    on_release: root.manager.current = "ADDLK"
+
+<ADDLKScreen>:
+    name: "ADDLK"
+    orientation: 'vertical'
+
+    MDCard:
+        size_hint: None, None
+        size: dp(350), dp(600)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 1
+        padding: dp(25)
+        spacing: dp(4)
+        orientation: 'vertical'
+
+    #Информация по заболеваниям, весу и т.д.
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Имя:"
+            MDTextField:
+                id: name_input
+                hint_text: "Изменить имя"
+                
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+            #md_bg_color: (0.2, 0.4, 0.6, 1.0)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Возраст:"
+            MDTextField:
+                id: age_input
+                hint_text: "Напишите Ваш возраст"
+                
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+            #md_bg_color: (0.2, 0.4, 0.6, 1.0)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Группа крови:"
+            MDTextField:
+                id: blood_group_input
+                hint_text: "Напишите Вашу группу крови"
+                
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+            #md_bg_color: (0.2, 0.4, 0.6, 1.0)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Аллергические реакции:"
+            MDTextField:
+                id: allergies_input
+                hint_text: "Есть ли у вас аллергические реакции?"
+                
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+            #md_bg_color: (0.2, 0.4, 0.6, 1.0)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Заболевания:"
+            MDTextField:
+                id: diseases_input
+                hint_text: "Есть ли у Вас заболевания?"
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, None
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+
+            MDLabel:
+                font_style: 'H6'
+                text: "Вес:"
+            MDTextField:
+                id: weight_input
+                hint_text: "Напишите Ваш вес"
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            height: dp(80)
+            padding: dp(5)
+            spacing: dp(10)
+
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                MDRectangleFlatButton:
+                    text: "Сохранить данные"
+                    on_release: root.save_data()
